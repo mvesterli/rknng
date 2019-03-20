@@ -27,11 +27,11 @@ float calculate_recall_sampled(kNNGraph* ground_truth, kNNGraph* kNN, int recall
     int gt_idx;
     float time_diff;
 
-    printf("{} k=%i recall for %i/%i points\n",kNN->k,ground_truth->size,kNN->size);
+    fprintf(stderr, "{} k=%i recall for %i/%i points\n",kNN->k,ground_truth->size,kNN->size);
     fflush(stdout);
 
     if( ground_truth->k <= recall_K){
-        printf("%d <= %d\n", ground_truth->k , kNN->k);
+        fprintf(stderr, "%d <= %d\n", ground_truth->k , kNN->k);
         //        terminal_error("Too small k in ground truth"); //TODO:
     }
 
@@ -71,8 +71,8 @@ float calculate_recall_sampled(kNNGraph* ground_truth, kNNGraph* kNN, int recall
 
     g_timer.contin();
     time_diff = g_timer.tuck("0:");
-    printf("RECALL: %f (SAMPLED %i/%i), TIME: %f recall_count=%llu kNN->k=%d recall_K=%d cost:%f approx: %f\n",recall,ground_truth->size,kNN->size, time_diff, recall_count, kNN->k, recall_K, cost,approx);
-    fflush(stdout);
+    fprintf(stderr, "RECALL: %f (SAMPLED %i/%i), TIME: %f recall_count=%llu kNN->k=%d recall_K=%d cost:%f approx: %f\n",recall,ground_truth->size,kNN->size, time_diff, recall_count, kNN->k, recall_K, cost,approx);
+    fflush(stderr);
     return recall;
 
 }

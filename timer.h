@@ -23,7 +23,7 @@ class Timer
         float   diff = get_time();
 
         if (msg != 0) {
-            printf("%s: time=%fs\n",msg,diff);
+            fprintf(stderr, "%s: time=%fs\n",msg,diff);
         }
         return diff;
     }

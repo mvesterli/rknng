@@ -89,17 +89,17 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
     float update_portion_nndes=0;
 
     if(nndesStart >  0.0) {
-        printf("Fast random pair divisive (RP-Div) construction of kNN graph v. 0.1\n");
+        fprintf(stderr, "Fast random pair divisive (RP-Div) construction of kNN graph v. 0.1\n");
     }
     else {
-        printf("NNDES construction of kNN graph v. 0.1\n");
+        fprintf(stderr, "NNDES construction of kNN graph v. 0.1\n");
     }
 
     //Two copies of tree. Optimization to avoid memory alloc/dealloc in future steps
     int * ind_arr = (int*) safemalloc(sizeof(int)*data->size);
     int * ind_arr2 = (int*) safemalloc(sizeof(int)*data->size);
 
-    printf("K=%d W=%d delta=%f data type %d, distance type:%d\n",K,window_width,delta,data->type,g_options.distance_type);
+    fprintf(stderr, "K=%d W=%d delta=%f data type %d, distance type:%d\n",K,window_width,delta,data->type,g_options.distance_type);
 
     knng->k=K; //TODO
 
@@ -123,7 +123,7 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
     }
 
     for (int i_iter=0;;i_iter++) {
-        printf("iter=%d ",i_iter);
+        fprintf(stderr, "iter=%d ",i_iter);
         g_timer.tuck("time");
         update_count = 0;
         int update_count_nndes = 0;
@@ -137,7 +137,7 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
             rpdiv_recurse(projDS,ind_arr,ind_arr2,projDS->size,0,knng,window_width,&update_count);
 
             update_portion = ((float)update_count)/((float)(data->size*knng->k)); //TODO:??
-            printf("RP-div update_count=%d changes=%f%%\n",update_count,update_portion*100);
+            fprintf(stderr, "RP-div update_count=%d changes=%f%%\n",update_count,update_portion*100);
         }
 
         if( update_portion < nndesStart || run_nndes) {
@@ -146,7 +146,7 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
             g_timer.tuck("start nndes");
             update_count_nndes = nndes_iterate_limited(data,knng,nndes_k);
             update_portion_nndes = ((float)update_count_nndes)/((float)(data->size*K));
-            printf("NNDES k=%d update_count_nndes=%d changes=%f%%\n",nndes_k,update_count_nndes,update_portion_nndes*100);
+            fprintf(stderr, "NNDES k=%d update_count_nndes=%d changes=%f%%\n",nndes_k,update_count_nndes,update_portion_nndes*100);
             calculate_recall(knng);
             if(nndes_k < nndes_max_k) {nndes_k += k_increment; knng->k += k_increment;}
         }
@@ -156,16 +156,16 @@ kNNGraph* rpdiv_create_knng(DataSet* data, DataSet* DS_proj, int K, int window_w
         calculate_recall(knng);
 
     if(update_portion + update_portion_nndes < delta) {
-        printf("Reached end condition: changes=%f%% < %f%%",(update_portion + update_portion_nndes)*100,delta*100);
+        fprintf(stderr, "Reached end condition: changes=%f%% < %f%%",(update_portion + update_portion_nndes)*100,delta*100);
 
         break;}
     else if(i_iter +1 >= maxIterations) {
-        printf("Reached end condition: iterations == %d",maxIterations);
+        fprintf(stderr, "Reached end condition: iterations == %d",maxIterations);
         break;}
 
     }
 
-    printf(", time=%fs\n",g_timer.get_time());
+    fprintf(stderr, ", time=%fs\n",g_timer.get_time());
 
     return knng;
 }

@@ -82,10 +82,10 @@ inline int dump_vector(DataSet* DS, int idx) {
     float* v =get_vector(DS,idx);
 
     for(int i = 0; i < DS->dimensionality; i++) {
-        printf(" %e",*v);
+        fprintf(stderr, " %e",*v);
         v++;
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 
     return 0;
 }
@@ -209,10 +209,10 @@ DataSet* read_lshkit(const char* fname) {
     ifstream infile(fname, ios::binary);
     infile.read((char*)header, sizeof(int)*3 );
     if(header[0] != sizeof(float)) {
-        printf("%d %zu",header[0],sizeof(float));
+        fprintf(stderr, "%d %zu",header[0],sizeof(float));
         terminal_error("Error reading input file. Format unknown.");
     }
-    printf("Reading file with %d vectors of dimensionality %d\n",
+    fprintf(stderr, "Reading file with %d vectors of dimensionality %d\n",
             header[1],header[2]);
 
     DS->size = header[1];
@@ -226,11 +226,11 @@ DataSet* read_lshkit(const char* fname) {
         // TODO
         /**datap = (float*)memalign(MEM_ALIGNMENT, DS->dimensionality * sizeof(float));*/
         *datap = (float*)malloc(DS->dimensionality * sizeof(float));
-        if(!*datap) {printf("mem align failed: i=%d\n",i);exit(1);}
+        if(!*datap) {fprintf(stderr, "mem align failed: i=%d\n",i);exit(1);}
         infile.read((char*)(*datap), DS->vector_size );
        datap++;
     }
-    printf("Done reading.\n");
+    fprintf(stderr, "Done reading.\n");
 
     return DS;
 }
@@ -246,7 +246,7 @@ DataSet* read_ascii_dataset(const char* fname) {
     char* pbuf;
     int i_elem=0;
     int dim=0;
-    printf("Reading ascii dataset file %s\n",fname);
+    fprintf(stderr, "Reading ascii dataset file %s\n",fname);
     fp = fopen(fname,"r");
     if(!fp) {terminal_error("File does not exist\n");}
 
@@ -262,7 +262,7 @@ DataSet* read_ascii_dataset(const char* fname) {
         /*printf(" %f", buf);*/
     }
     dim = i_elem;
-    printf("\nnum_vectors=%d D=%d\n",N,dim);
+    fprintf(stderr, "\nnum_vectors=%d D=%d\n",N,dim);
 
     DataSet* DS = (DataSet*) safemalloc(sizeof(DataSet));
     DS->size = N;
@@ -277,7 +277,7 @@ DataSet* read_ascii_dataset(const char* fname) {
         //TODO: mem alignment needed?
         /**datap = (float*)memalign(MEM_ALIGNMENT, DS->dimensionality * sizeof(float));*/
         *datap = (float*)malloc(DS->dimensionality * sizeof(float));
-        if(!*datap) {printf("mem align failed: i=%d\n",i_vector);exit(1);}
+        if(!*datap) {fprintf(stderr, "mem align failed: i=%d\n",i_vector);exit(1);}
 
 
         float* col_p = *datap;

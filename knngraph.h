@@ -71,13 +71,13 @@ void  free_kNNGraph(kNNGraph * kNN) {
 
 
 void debug_graph(kNNGraph* knng) {
-    printf("knng->k: %d\n",knng->k);
+    fprintf(stderr, "knng->k: %d\n",knng->k);
 
     for (int i_row=0; i_row < 10; i_row++) {
         for (int j = 0; j < knng->k; ++j) {
-            printf("%d ",knng->list[i_row].items[j].id);
+            fprintf(stderr, "%d ",knng->list[i_row].items[j].id);
         }
-        printf("\n");
+        fprintf(stderr, "\n");
     }
 }
 
@@ -85,11 +85,11 @@ int updatekNN(kNNGraph* kNN, int p1, int p2, float dist)
 {
 #ifdef SANITYCHECK
     if(p1 == p2 && kNN->format != RANDOM_SAMPLED_BRUTEFORCE) {
-        printf("p1=%u=p2\n",p1);
+        fprintf(stderr, "p1=%u=p2\n",p1);
         terminal_error("p1=p2");
     }
     if(p1 >= kNN->size) {
-        printf("p1 = %u >= kNN->size\n",p1);
+        fprintf(stderr, "p1 = %u >= kNN->size\n",p1);
         terminal_error(" ");
     }
 #endif
@@ -134,7 +134,7 @@ int update(kNNGraph* kNN, DataSet* data, int p1, int p2) {
 #endif
 #ifdef SANITYCHECK
     if ( p2 >= kNN->size || p1 >= kNN->size) {
-        printf("%u,%u x %d\n",p1,p2,kNN->size);
+        fprintf(stderr, "%u,%u x %d\n",p1,p2,kNN->size);
         terminal_error("invalid p1,p2");
     }
 #endif
@@ -152,7 +152,7 @@ int update_one(kNNGraph* kNN, DataSet* DS, int p1, int p2) {
     int update_count = 0;
 #ifdef SANITYCHECK
     if ( p2 >= kNN->size || p1 >= kNN->size) {
-        printf("%u,%u x %d\n",p1,p2,kNN->size);
+        fprintf(stderr, "%u,%u x %d\n",p1,p2,kNN->size);
         terminal_error("invalid p1,p2");
     }
 #endif
@@ -169,7 +169,7 @@ inline int get_kNN_item_id(kNNGraph * kNN, int i_list, int i_k) {
 #ifdef SANITYCHECK
     if (i_list < 0 || i_list > kNN->size || i_k >= kNN->k
             || i_k >= kNN->list[i_list].size) {
-        printf("%d x %d\n",i_list,kNN->size);
+        fprintf(stderr, "%d x %d\n",i_list,kNN->size);
         std::raise(SIGINT);
         terminal_error("get_kNN_item_id: invalid i_list or i_k params");
     }
@@ -181,7 +181,7 @@ inline float get_kNN_item_dist(kNNGraph * kNN, int i_list, int i_k) {
 #ifdef SANITYCHECK
     if (i_list < 0 || i_list > kNN->size || i_k >= kNN->k
             || i_k >= kNN->list[i_list].size) {
-        printf("%d x %d\n",i_list,kNN->size);
+        fprintf(stderr, "%d x %d\n",i_list,kNN->size);
         std::raise(SIGINT);
         terminal_error("get_kNN_item_id: invalid i_list or i_k params");
     }
@@ -208,7 +208,7 @@ inline void set_kNN_val(kNNGraph * kNN, int i_list, int i_k, int id, float dist,
 inline kNNList* get_kNN_list(kNNGraph * kNN, int i_list) {
 #ifdef SANITYCHECK
     if (i_list < 0 || i_list > kNN->size) {
-        printf("%d x %d\n",i_list,kNN->size);
+        fprintf(stderr, "%d x %d\n",i_list,kNN->size);
         /*std::raise(SIGINT);*/
         terminal_error("invalid i_list");
     }
@@ -219,7 +219,7 @@ inline kNNList* get_kNN_list(kNNGraph * kNN, int i_list) {
 inline void set_kNN_id(kNNGraph * kNN, int i_list, int id) {
 #ifdef SANITYCHECK
     if (i_list < 0 || i_list > kNN->size ) {
-        printf("%d x %d\n",i_list,kNN->size);
+        fprintf(stderr, "%d x %d\n",i_list,kNN->size);
         /*std::raise(SIGINT);*/
         terminal_error("get_kNN_item_id: invalid i_list or i_k params");
     }
@@ -268,11 +268,11 @@ int write_kNN_txt(const char * fname, kNNGraph * kNN) {
 
 void debugStringGraph(DataSet* DS,kNNGraph* knng,int i) {
     string stmp = DS->strings->at(i);
-    printf("%s: ",(DS->strings->at(i)).c_str());
+    fprintf(stderr, "%s: ",(DS->strings->at(i)).c_str());
     for(int j=0;j<knng->k;j++) {
-        printf("%s(%.4f), ",(DS->strings->at(knng->list[i].items[j].id)).c_str(),knng->list[i].items[j].dist);
+        fprintf(stderr, "%s(%.4f), ",(DS->strings->at(knng->list[i].items[j].id)).c_str(),knng->list[i].items[j].dist);
     }
-    printf("\n");
+    fprintf(stderr, "\n");
 }
 
 void debugVecGraph(DataSet* DS,kNNGraph* knng,int i) {
@@ -372,7 +372,7 @@ kNNGraph * load_kNN_ivec(const std::string &path, int format) {
 
     bf_N = (filesize)/((bf_K+1)*sizeof(int));
 
-    printf("\nK=%i filesize=%u num_vectors=%f\n",bf_K,filesize,(filesize+0.0)/((bf_K+1)*sizeof(int)));
+    fprintf(stderr, "\nK=%i filesize=%u num_vectors=%f\n",bf_K,filesize,(filesize+0.0)/((bf_K+1)*sizeof(int)));
 
 
     if(format == RANDOM_SAMPLED_BRUTEFORCE ||
@@ -397,7 +397,7 @@ kNNGraph * load_kNN_ivec(const std::string &path, int format) {
 
             result = fread((char*)(&buf), sizeof(int),1,fp);
             if(((int) (buf)) != bf_K) {
-                printf("[i:%d,i_vector:%d,fs:%d] %zu bytes bf_K: %d, buf_first:%u",i,i_vector,
+                fprintf(stderr, "[i:%d,i_vector:%d,fs:%d] %zu bytes bf_K: %d, buf_first:%u",i,i_vector,
                         filesize,result, bf_K,((int) (buf)));
                 terminal_error("Assert error in reading vector");
             }
@@ -420,7 +420,7 @@ kNNGraph * load_kNN_ivec(const std::string &path, int format) {
     }
     //TODO: implement sanity check
 
-    printf("Read %d vectors, %d elements, k=%d\n",i_vector+1,i,bf_K);
+    fprintf(stderr, "Read %d vectors, %d elements, k=%d\n",i_vector+1,i,bf_K);
     return kNN;
 } //END load_kNN
 
