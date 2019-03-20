@@ -3,3 +3,4 @@ tmp
 *.knn
 *.o
 rknng
+annbenchmark_wrapper

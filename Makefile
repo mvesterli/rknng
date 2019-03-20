@@ -12,22 +12,25 @@ DEPS = *.cpp *.h
 OBJS=argtable3.o options.o
 .PHONY:	all clean
 
-PROGS= rknng
+PROGS= rknng annbenchmark_wrapper
 
 all: rknng
 
 #Should support compiling with g++, but there was a error message.
-argtable3.o:
+argtable3.o: contrib/argtable3.c
 	gcc -c $(CFLAGS) contrib/argtable3.c
+wrapper/protocol.o: wrapper/protocol.c
+	gcc -c $(CFLAGS) -o $@ $^
 
-options.o:
+options.o: options.c
 	$(CC) -c $(CXXFLAGS) options.c
 
 rknng: $(DEPS) $(OBJS)
 	$(CC) $(CXXFLAGS) $(DISABLEWARN) knng.cpp       $(OBJS) -o rknng
 
 clean:
-	rm -f $(PROGS) *.o
+	rm -f $(PROGS)
+	find . -type f -name '*.o' -delete
 
 apitest:
 	g++ -O3 -c -std=c++11 -fPIC -o rknng_lib.o rknng_lib.cpp
@@ -35,3 +38,5 @@ apitest:
 	gcc -c apitest.c
 	g++ -o apitest apitest.o rknng_lib.o options.o
 
+annbenchmark_wrapper: wrapper/wrapper.o wrapper/protocol.o $(OBJS)
+	$(CC) -o $@ $^
