@@ -162,6 +162,14 @@ inline float L2dist(float* p1_idx,float* p2_idx,int D) {
     /*return sqrt(dist);*/
 }
 
+float angularDist(float* p1, float* p2, int D) {
+    float sim = 0;
+    for (int i=0; i < D; i++) {
+        sim += p1[i]*p2[i];
+    }
+    return -sim;
+}
+
 
 inline float distance(DataSet* P, int p1, int p2 ) {
     float ret;
@@ -188,6 +196,9 @@ inline float distance(DataSet* P, int p1, int p2 ) {
                 break;
             case 1:
                 ret=minkowskiDist(p1_idx,p2_idx,P->dimensionality,g_options.minkowski_p);
+                break;
+            case 2:
+                ret = angularDist(p1_idx, p2_idx, P->dimensionality);
                 break;
             default:
                 exit(1); //TODO

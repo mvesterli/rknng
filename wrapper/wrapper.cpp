@@ -37,6 +37,8 @@ float nndes_start = 0.1;
 
 int max_iterations = 100;
 
+std::string metric = "euclidean";
+
 bool configure(const char* var, const char* val) {
   if (strcmp(var, "count") == 0) {
     char* end;
@@ -78,6 +80,9 @@ bool configure(const char* var, const char* val) {
         nndes_start = k;
         return true;
     }
+  } else if (strcmp(var, "metric") == 0) {
+    metric = std::string(val);
+    return true;
   } else return false;
 }
 
@@ -109,6 +114,13 @@ static kNNGraph* graph;
 
 
 void end_train(void) {
+    if (metric == "euclidean") {
+        g_options.distance_type = 0;
+    } else if (metric == "angular") {
+        g_options.distance_type = 2;
+    } else {
+        throw "Unsupported distance type";
+    }
     size_t d = pointset[0].size();
     dataset = init_DataSet(pointset.size(), d);
     for (size_t dataset_idx = 0; dataset_idx < pointset.size(); dataset_idx++) {
