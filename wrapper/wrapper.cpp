@@ -104,6 +104,20 @@ void end_train(void) {
         throw "Unsupported distance type";
     }
 
+    // Normalize data
+    if (g_options.distance_type == 2) {
+        for (auto& vec : pointset) {
+            float square_sum = 0;
+            for (auto v : vec) {
+                square_sum += v*v;
+            }
+            float len = std::sqrt(square_sum);
+            for (auto& v : vec) {
+                v /= len;
+            }
+        }
+    }
+
     size_t d = pointset[0].size();
     dataset = init_DataSet(pointset.size(), d);
     for (size_t dataset_idx = 0; dataset_idx < pointset.size(); dataset_idx++) {
