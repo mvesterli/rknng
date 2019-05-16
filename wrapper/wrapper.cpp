@@ -27,15 +27,7 @@ static unsigned int K = 10;
 // Size when to use brute force
 int window_width = 20;
 
-// Stop entirely when the fraction of neighbors updated during a single iteration falls
-// below this treshold
-float delta = 0.01;
-
-// When the fraction of neighbors updated by a single update of rpdiv falls
-// below this treshold, start running nndescent
-float nndes_start = 0.1;
-
-int max_iterations = 100;
+int max_iterations = 50;
 
 std::string metric = "euclidean";
 
@@ -60,25 +52,15 @@ bool configure(const char* var, const char* val) {
       window_width = k;
       return true;
     }
-  } else if (strcmp(var, "delta") == 0) {
+  } else if (strcmp(var, "max_iterations") == 0) {
     char* end;
     errno = 0;
     unsigned long long k = strtof(val, &end);
     if (errno != 0 || *val == 0 || *end != 0 || k < 0) {
       return false;
     } else {
-      delta = k;
+      max_iterations = k;
       return true;
-    }
-  } else if (strcmp(var, "nndes_start") == 0) {
-    char* end;
-    errno = 0;
-    float k = strtof(val, &end);
-    if (errno != 0 || *val == 0 || *end != 0 || k < 0) {
-        return false;
-    } else {
-        nndes_start = k;
-        return true;
     }
   } else if (strcmp(var, "metric") == 0) {
     metric = std::string(val);
@@ -121,6 +103,7 @@ void end_train(void) {
     } else {
         throw "Unsupported distance type";
     }
+
     size_t d = pointset[0].size();
     dataset = init_DataSet(pointset.size(), d);
     for (size_t dataset_idx = 0; dataset_idx < pointset.size(); dataset_idx++) {
@@ -130,7 +113,7 @@ void end_train(void) {
     }
 
     graph = rpdiv_create_knng(
-        dataset, dataset, K, window_width, delta, nndes_start, max_iterations);
+        dataset, dataset, K, window_width, 0.0, 0.000001, max_iterations);
     pointset.clear();
     pointset.shrink_to_fit();
 }
